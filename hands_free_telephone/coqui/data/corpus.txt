@@ -1,0 +1,75 @@
+rufe {phone_number} an
+ruf {phone_number}
+ruf die {phone_number}
+ruf {phone_number} an
+verbinde mich mit {phone_number}
+wähle {phone_number}
+rufe {name} an
+ruf {name} an
+verbinde mich mit {name}
+verbinde mit {name}
+Anruf halten
+halten
+halte Anruf
+Anruf stumm
+stumm schalten
+anruf stumm schalten
+stummschalten
+stumm
+Anruf ablehnen
+ablehnen
+abweisen
+jetzt nicht
+Anruf annehmen
+annehmen
+abnehmen
+nimm an
+hebe ab
+heb ab
+auflegen
+Anruf beenden
+lege auf
+beenden
+ende
+speichere {phone_number} unter {name}
+speichere {name} unter der Nummer {phone_number}
+speichere {name} unter der Telefonnummer {phone_number}
+speichere für {name} die Nummer {phone_number}
+speichere unter {name} die Nummer {phone_number}
+speichere unter {name} die Telefonnummer {phone_number}
+speichere für {name} die Telefonnummer {phone_number}
+speichere {name} als {phone_number}
+speichere {phone_number} unter {name}
+speichere {phone_number} in Kontakt {name}
+speichere {phone_number} als {name}
+speichere {name} unter der Telefonnummer {phone_number}
+speichere {name} im Telefonbuch mit der Telefonnummer {phone_number}
+speichere den Kontakt {name} unter der Nummer {phone_number}
+{name} ist unter {phone_number} erreichbar
+{name} ist unter der Nummer {phone_number} erreichbar
+{name} ist unter der Telefonnummer {phone_number} erreichbar
+lege {name} als {phone_number} an
+lege neuen Kontakt {name} mit der Nummer {phone_number} an
+lege einen neuen Kontakt {name} mit der Nummer {phone_number} an
+lege neuen Kontakt {name} mit der Telefonnummer {phone_number} an
+lege den Kontakt {name} mit der Telefonnummer {phone_number} an
+lege den Kontakt {name} mit der Nummer {phone_number} an
+merke {phone_number} als {name}
+merke Dir {phone_number} als {name}
+merke Dir {phone_number} unter {name}
+merke {phone_number} unter {name}
+speichere {phone_number} unter {name}
+speichere die Telefonnummer {phone_number} unter {name}
+speichere die Nummer {phone_number} unter {name}
+speichere die Telefonnummer {phone_number} als {name}
+speichere die Nummer {phone_number} als {name}
+die Telefonnummer von {name} ist {phone_number}
+die Handynummer von {name} ist {phone_number}
+die Nummer von {name} ist {phone_number}
+speichere {phone_number} unter {name}
+
+
+
+
+
+

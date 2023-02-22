@@ -1,0 +1,17 @@
+torchaudio @ https://github.com/HandsFreeGadgets/python-wheels/releases/download/v0.1/torchaudio-2.0.0a0+c6a5235-cp38-cp38-linux_aarch64.whl ; platform_machine=='aarch64' 
+azure-cognitiveservices-speech~=1.24.2
+chardet~=3.0.4
+cryptography~=3.4.7
+google-cloud-speech~=2.0.1
+google-cloud-texttospeech~=2.2.0
+grpcio~=1.34.0
+ibm-watson~=6.1.0
+importlib-resources
+miniaudio~=1.55
+PyAudio~=0.2.11
+pydub~=0.24.1
+python-utils~=2.4.0
+stt~=1.4.0; platform_machine=='x86_64'
+tts==0.10.2
+vosk~=0.3.45
+openai-whisper @ git+https://github.com/openai/whisper.git

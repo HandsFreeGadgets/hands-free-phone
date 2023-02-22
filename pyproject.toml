@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools", "setuptools_scm[toml]"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hands_free_telephone"
+requires-python = "~=3.8"
+license = { file = "LICENSE" }
+authors = [
+    { email = "hft@ohmesoftware.de" },
+    { name = "Karsten Ohme" }
+]
+description = "The project is defining a voice recognition solution for controlling a telephone."
+readme = "README.md"
+classifiers = [
+    'Development Status :: 4 - Beta',
+    'Intended Audience :: End Users/Desktop',
+    'Topic :: Communications :: Telephony',
+    'License :: Other/Proprietary License',
+    'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
+    'Operating System :: POSIX :: Linux',
+    'Natural Language :: German',
+    'Environment :: GPU',
+    'Environment :: Console',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.8',
+]
+dynamic = ["version", "dependencies"]
+
+[project.urls]
+repository = "https://github.com/kaoh/HandsFreeTelephone"
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[project.scripts]
+hands_free_telephone_setup = "hands_free_telephone:setup"
+audio_intensity = "hands_free_telephone:audio_intensity"
+
+[tool.setuptools_scm]
+
+[tool.setuptools]
+script-files = ["hands_free_telephone/hands_free_telephone"]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = ['venv**', 'testbuild**', 'speech_processing*', 'speech_recognition*tests', 'hands_free_telephone/coqui/*.py', 'hands_free_telephone**coqui**.py', 'hands_free_telephone*coqui*py']
+
+[tool.setuptools.package-data]
+"hands_free_telephone.coqui" = ['kenlm.scorer', 'model.tflite']
+"hands_free_telephone.vosk" = ['*', '*/**']
+

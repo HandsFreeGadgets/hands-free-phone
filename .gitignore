@@ -1,0 +1,7 @@
+.idea
+venv
+venv_tools
+__pycache__
+testbuild
+coqui-stt-train-venv
+STT

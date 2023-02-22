@@ -1,0 +1,10 @@
+#!/bin/bash
+PACKAGES_DIR=$(python -c 'import site; print(site.getsitepackages()[0])')
+
+ARCH=$(uname -p)
+if [ "$ARCH" = "aarch64" ]
+then 
+  export LD_PRELOAD=${PACKAGES_DIR}/sklearn/__check_build/../../scikit_learn.libs/libgomp-d22c30c5.so.1.0.0
+fi
+
+python -m hands_free_telephone.hands_free_telephone "$@"

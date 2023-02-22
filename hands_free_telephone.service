@@ -1,0 +1,19 @@
+[Unit]
+Description=Hands-Free Telephone
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+User=handsfree
+Group=handsfree
+Type=simple
+Restart=always
+RestartSec=5
+ExecStartPre=-pulseaudio -k
+ExecStartPre=pulseaudio -D
+ExecStart=screen -D -m -S hands_free_telephone -L -Logfile /home/handsfree/hands_free_telephone/log/hands_free_telephone.log bash -c hands_free_telephone 
+ExecStop=screen -X -S hands_free_telephone quit
+ExecStop=-pulseaudio -k
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
