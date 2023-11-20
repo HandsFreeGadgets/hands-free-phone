@@ -305,7 +305,8 @@ def listen(stt_mode: str, tts_mode: str,
                 if start_sub_samples <= 0:
                     continue
                 processing_end_sample = len(audio_samples)
-                inference_data = b"".join(audio_samples[start_sub_samples:])
+                inference_data = b"".join(audio_samples[start_sub_samples:min(start_sub_samples+samples_key_word, 
+                                                                              processing_end_sample)])
                 start_time_keyword = 0
                 if vosk_rec.AcceptWaveform(inference_data):
                     as_json = json.loads(vosk_rec.Result())
@@ -374,8 +375,9 @@ def listen(stt_mode: str, tts_mode: str,
                         else:
                             sleep(1)
                 else:
+                    sleep(1)
                     # remove all samples included in the speech recognition already evaluated
-                    [audio_samples.pop(0) for x in range(processing_end_sample - max(samples_key_word-1, 0))]
+                    [audio_samples.pop(0) for _ in range(processing_end_sample - max(samples_key_word-1, 0))]
         except Exception as e:
             logging.exception("Technical problem: %s", str(e))
             try:
@@ -566,10 +568,11 @@ def __recognize_command__(stt_mode: str, stt_preloaded: any, stt_model: str, lan
             raise RuntimeError('No supported STT provided.')
 
     if text:
-        __handle_command__(command=text, keywords=keywords, rasa_url=rasa_url,
-                           tts_credentials_json=tts_credentials_json, tts_mode=tts_mode,
-                           tts_preloaded=tts_preloaded, tts_model=tts_model, tts_lang=lang,
-                           misunderstood=misunderstood)
+        pass
+        # __handle_command__(command=text, keywords=keywords, rasa_url=rasa_url,
+        #                    tts_credentials_json=tts_credentials_json, tts_mode=tts_mode,
+        #                    tts_preloaded=tts_preloaded, tts_model=tts_model, tts_lang=lang,
+        #                    misunderstood=misunderstood)
     else:
         if misunderstood:
             asyncio.run(play_text(tts_mode, tts_preloaded, tts_model, lang, misunderstood, tts_credentials_json=tts_credentials_json))

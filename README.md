@@ -17,10 +17,10 @@ On other OS a different package manager providing the same packages should work.
 
 ### Python
 
-Install Python 3.8 (should be the default in Ubuntu 20.04):
+Install Python 3.10:
 
 ~~~shell
-sudo apt install python3.8
+sudo apt install python3.10
 ~~~
 
 FFmpeg:
@@ -35,7 +35,7 @@ In an aarch64 environment install the following dependencies:
 
 ~~~shell
 # aarch64 architecture
-sudo apt install python3.8-dev portaudio19-dev
+sudo apt install python3.10-dev portaudio19-dev
 ~~~
 
 ### Xavier NX
