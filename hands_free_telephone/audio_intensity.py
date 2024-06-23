@@ -6,7 +6,7 @@ import pyaudio
 from speech_recognition.speech_recognition import FRAMES_PER_CHUNK, SAMPLE_WIDTH, __get_rms__
 
 
-DESCRIPTION = "Programm zur Bestimmung des Pegels des Mikrofones beim Sprechen."
+DESCRIPTION = "Programm zur Bestimmung des Pegels des Mikrofons beim Sprechen."
 
 
 def audio_intensity():

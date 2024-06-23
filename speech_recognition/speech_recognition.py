@@ -8,8 +8,7 @@ import logging.config
 import math
 import os
 import platform
-import random
-import string
+from memory_profiler import profile
 import struct
 import time
 from builtins import int, max
@@ -22,7 +21,6 @@ from typing import List, Tuple
 import miniaudio
 import numpy as np
 import pyaudio
-import requests
 import vosk
 import yaml
 import whisper
@@ -224,9 +222,10 @@ def metadata_to_start_time(metadata, keywords: List[str]) -> float:
         if keyword in text:
             start_index = text.index(keyword)
             return metadata.tokens[start_index].start_time
-    return ValueError('Keyword not found in text: {}'.format(text))
+    raise ValueError('Keyword not found in text: {}'.format(text))
 
 
+@profile
 def listen(stt_mode: str, tts_mode: str,
            stt_model: str, tts_model: str,
            lang: str,
@@ -236,7 +235,7 @@ def listen(stt_mode: str, tts_mode: str,
            config_path: str, technical_problem: str,
            cloud_model_customization: str = None, grammar: str = None,
            please_wait: str = None, misunderstood: str = None,
-           rasa_url: str = 'http://localhost:5006',
+           command_handler: str = None,
            scorer: str = None, log_level: str = 'INFO', channels: int = 1
            ):
     """
@@ -256,7 +255,7 @@ def listen(stt_mode: str, tts_mode: str,
     :param stt_credentials_json: The STT credentials as JSON. For MS create a JSON file with a 'api-key' key.
     :param tts_credentials_json: The TTS JSON credentials as JSON.  For MS create a JSON file with a 'api-key' key.
     :param config_path: The config path where to store (log) configuration.
-    :param rasa_url: The Rasa server URL.
+    :param command_handler: The command handler for executing the recognized command.
     :param technical_problem: text for saying "Technical Problem".
     :param cloud_model_customization: The model customization to use with the cloud model STT provider.
     :param grammar: The grammar to use with the cloud model STT provider.
@@ -280,6 +279,8 @@ def listen(stt_mode: str, tts_mode: str,
     tts_preloaded = None
     if tts_mode == 'coqui':
         tts_preloaded = TTS(model_name=tts_model, progress_bar=False)
+    if command_handler is None:
+        command_handler = "speech_recognition.rasa_command_handler"
 
     p = pyaudio.PyAudio()
     audio_stream = p.open(format=pyaudio.get_format_from_width(SAMPLE_WIDTH), channels=channels, rate=SAMPLE_RATE,
@@ -328,7 +329,7 @@ def listen(stt_mode: str, tts_mode: str,
                     skip_samples = start_sub_samples + int(chunks_per_second * math.floor(start_time_keyword)) - 1
                     if skip_samples < 0:
                         skip_samples = 0
-                    [audio_samples.pop(0) for x in range(skip_samples)]
+                    [audio_samples.pop(0) for _ in range(skip_samples)]
 
                     # wait until silence or max time has elapsed
                     while audio_stream.is_active():
@@ -356,7 +357,7 @@ def listen(stt_mode: str, tts_mode: str,
                             logger.debug('Sending %d bytes (%d sec) for recognition', len(samples),
                                          len(samples) / SAMPLE_RATE / SAMPLE_WIDTH)
                             try:
-                                __recognize_command__(stt_mode=stt_mode, stt_model=stt_model, 
+                                __recognize_command__(stt_mode=stt_mode, stt_model=stt_model,
                                                       stt_preloaded=stt_preloaded,
                                                       tts_mode=tts_mode, tts_model=tts_model,
                                                       tts_preloaded=tts_preloaded,
@@ -367,7 +368,7 @@ def listen(stt_mode: str, tts_mode: str,
                                                       sample_rate=SAMPLE_RATE, channels=1,
                                                       cloud_model_customization=cloud_model_customization,
                                                       grammar=grammar,
-                                                      keywords=keywords, rasa_url=rasa_url,
+                                                      keywords=keywords, command_handler=command_handler,
                                                       please_wait=please_wait, misunderstood=misunderstood)
                             finally:
                                 audio_samples.clear()
@@ -440,7 +441,7 @@ def __recognize_command__(stt_mode: str, stt_preloaded: any, stt_model: str, lan
                           stt_credentials_json: str, tts_credentials_json: str, data: bytes,
                           sample_rate: int, channels: int,
                           cloud_model_customization: str, grammar: str,
-                          keywords: List[str], rasa_url: str,
+                          keywords: List[str], command_handler: str,
                           please_wait: str = None, misunderstood: str = None
                           ):
     if please_wait:
@@ -569,10 +570,10 @@ def __recognize_command__(stt_mode: str, stt_preloaded: any, stt_model: str, lan
 
     if text:
         pass
-        # __handle_command__(command=text, keywords=keywords, rasa_url=rasa_url,
-        #                    tts_credentials_json=tts_credentials_json, tts_mode=tts_mode,
-        #                    tts_preloaded=tts_preloaded, tts_model=tts_model, tts_lang=lang,
-        #                    misunderstood=misunderstood)
+        __handle_command__(command=text, keywords=keywords, command_handler=command_handler,
+                           tts_credentials_json=tts_credentials_json, tts_mode=tts_mode,
+                           tts_preloaded=tts_preloaded, tts_model=tts_model, tts_lang=lang,
+                           misunderstood=misunderstood)
     else:
         if misunderstood:
             asyncio.run(play_text(tts_mode, tts_preloaded, tts_model, lang, misunderstood, tts_credentials_json=tts_credentials_json))
@@ -580,7 +581,7 @@ def __recognize_command__(stt_mode: str, stt_preloaded: any, stt_model: str, lan
             asyncio.run(play_file('denybeep1.wav'))
 
 
-def __handle_command__(command: str, keywords: List[str], rasa_url: str,
+def __handle_command__(command: str, keywords: List[str], command_handler: str,
                        tts_mode: str, tts_preloaded: any, tts_model: str, tts_lang: str,
                        tts_credentials_json: str, misunderstood: str = None):
     command = command.lower()
@@ -602,37 +603,11 @@ def __handle_command__(command: str, keywords: List[str], rasa_url: str,
                 command = keyword_separated[1]
     if len(command) == 0:
         return
-    conversation_id = ''.join(random.choice(string.ascii_letters + string.digits) for i in range(16))
-    request = {
-        "text": command,
-        "sender": "user"
-    }
-    response = requests.post(rasa_url + "/conversations/{}/messages".format(conversation_id), json=request)
-    if response.status_code != 200:
-        raise IOError("Error talking to RASA server: {}".format(response.content))
-    message = response.json()
-    logger.info("Recognized intent: %s | entities: %s", message["latest_message"]["intent"],
-                message["latest_message"]["entities"])
-    response = requests.post(rasa_url + "/conversations/{}/predict".format(conversation_id))
-    if response.status_code != 200:
-        raise IOError("Error talking to RASA server: {}".format(response.content))
-    message = response.json()
-    logger.info("Identified action: %s | policy: %s | confidence: %s", message["scores"][0], message["policy"],
-                message["confidence"])
-    # trigger action
-    request = {
-        "name": message["scores"][0]['action'],
-        "policy": message["policy"],
-        "confidence": message["confidence"]
-    }
-    response = requests.post(rasa_url + "/conversations/{}/execute".format(conversation_id), json=request)
-    if response.status_code != 200:
-        raise IOError("Error talking to RASA server: {}".format(response.content))
-    message = response.json()
-    if message['messages']:
-        text = message["messages"][0]["text"]
-        logger.info("Received message response: %s", text)
-        asyncio.run(play_text(tts_mode, tts_preloaded, tts_model, tts_lang, text, tts_credentials_json=tts_credentials_json))
+    command_handler_module = importlib.import_module(command_handler)
+    handle_command = getattr(command_handler_module, "handle_command")
+    message = handle_command(command, logger)
+    logger.info("Received message response: %s", message)
+    asyncio.run(play_text(tts_mode, tts_preloaded, tts_model, tts_lang, message, tts_credentials_json=tts_credentials_json))
 
 
 SHORT_NORMALIZE = (1.0 / 32768.0)

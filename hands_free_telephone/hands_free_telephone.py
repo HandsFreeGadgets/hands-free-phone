@@ -10,14 +10,13 @@ from importlib_resources import files, as_file
 
 from speech_recognition.speech_recognition import listen
 
+
 # ReSpeaker USB Mic Array
 # CHANNELS = 6
 # Jabra UC 750 and others
 CHANNELS = 1
 
 KEYWORDS = ("telefon",)
-
-RASA_URL = "http://localhost:5005"
 
 PLEASE_WAIT = None
 
@@ -26,7 +25,7 @@ MISUNDERSTOOD = None
 LOG_LEVEL = 'DEBUG'
 
 TECHNICAL_PROBLEM = "Ein technischer Fehler ist aufgetreten."
-DESCRIPTION = "Sprachassistant für Telefonie."
+DESCRIPTION = "Sprachassistent für Telefonie."
 STT_PARAM = 'Speech-To-Text Modul'
 TTS_PARAM = 'Text-To-Speech Modul'
 STT_MODEL_PARAM = 'Speech-To-Text Modell. coqui: model.tflite, ibm: de-DE_BroadbandModel, whisper: large | medium | small | base | tiny'
@@ -37,8 +36,9 @@ STT_CREDENTIALS_PARAM = 'Speech-To-Text Zugangsdaten'
 TTS_CREDENTIALS_PARAM = 'Text-To-Speech Zugangsdaten'
 KEYWORD_MODEL_PARAM = 'Vosk Schlüsselwort Modell'
 KEYWORD_PARAM = 'Das Schlüsselwort'
+COMMAND_HANDLER_PARAM = 'Command Handler Implementierung für die Ausführung des erkannten Befehls'
 COQUI_SCORER_PARAM = 'Coqui Scorer'
-TECHNICAL_PROBLEM_PARAM = 'Satz, der wiedergegeben wird bei technischen Problemem'
+TECHNICAL_PROBLEM_PARAM = 'Satz, der wiedergegeben wird bei technischen Problemen'
 PLEASE_WAIT_PARAM = 'Satz, der wiedergegeben wird beim Warten. Standardmäßig nur Piepen'
 MISUNDERSTOOD_PARAM = 'Satz, der wiedergegeben wird beim Warten. Standardmäßig nur Piepen'
 LOG_LEVEL_PARAM = 'Loglevel: INFO, DEBUG'
@@ -79,6 +79,7 @@ def listen_for_telephone():
                         choices=["ms-azure.json", "google-cloud.json", "ibm-tts-cloud.json"])
     parser.add_argument('--keyword_model', type=str, help=KEYWORD_MODEL_PARAM)
     parser.add_argument('--keyword', type=str, help=KEYWORD_PARAM)
+    parser.add_argument('--command_handler', type=str, help=COMMAND_HANDLER_PARAM)
     parser.add_argument('--coqui_scorer', type=str, help=COQUI_SCORER_PARAM)
     parser.add_argument('--technical_problem', type=str, help=TECHNICAL_PROBLEM_PARAM)
     parser.add_argument('--misunderstood', type=str, help=MISUNDERSTOOD_PARAM)
@@ -121,7 +122,7 @@ def listen_for_telephone():
            keyword_model=keyword_model,
            scorer=coqui_scorer,
            technical_problem=technical_problem, please_wait=please_wait, mic_threshold=args.mic_threshold,
-           rasa_url=RASA_URL, log_level=log_level, channels=CHANNELS, misunderstood=misunderstood
+           command_handler=args.command_handler, log_level=log_level, channels=CHANNELS, misunderstood=misunderstood
            )
 
 

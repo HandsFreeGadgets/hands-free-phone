@@ -361,6 +361,13 @@ To clean the build run (Otherwise old artifacts are retained):
 rm -rf dist build *.egg-info
 ~~~
 
+## Profiling
+
+~~~shell
+pip install line_profiler
+export PYTHONPATH=$PYTHONPATH:speech_recognition && kernprof -l -v hands_free_telephone/hands_free_telephone.py
+~~~
+
 ## Vosk (Keyword Recognition)
 
 [Vosk](https://alphacephei.com/vosk/) is used a keyword offline recognizer.  
