@@ -8,7 +8,6 @@ import logging.config
 import math
 import os
 import platform
-from memory_profiler import profile
 import struct
 import time
 from builtins import int, max
@@ -225,7 +224,6 @@ def metadata_to_start_time(metadata, keywords: List[str]) -> float:
     raise ValueError('Keyword not found in text: {}'.format(text))
 
 
-@profile
 def listen(stt_mode: str, tts_mode: str,
            stt_model: str, tts_model: str,
            lang: str,
@@ -607,7 +605,8 @@ def __handle_command__(command: str, keywords: List[str], command_handler: str,
     handle_command = getattr(command_handler_module, "handle_command")
     message = handle_command(command, logger)
     logger.info("Received message response: %s", message)
-    asyncio.run(play_text(tts_mode, tts_preloaded, tts_model, tts_lang, message, tts_credentials_json=tts_credentials_json))
+    if message:
+        asyncio.run(play_text(tts_mode, tts_preloaded, tts_model, tts_lang, message, tts_credentials_json=tts_credentials_json))
 
 
 SHORT_NORMALIZE = (1.0 / 32768.0)
